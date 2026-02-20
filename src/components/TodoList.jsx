@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, CheckCircle, Circle, Edit2, X } from "lucide-react";
-import { useWebMCP } from "@mcp-b/react-webmcp";
-import { z } from "zod";
 
-export default function TodoList() {
+export default function TodoList({ onNavigateToInsurance }) {
   const [todos, setTodos] = useState(() => {
     const saved = localStorage.getItem("todos");
     if (saved) {
@@ -61,103 +59,117 @@ export default function TodoList() {
 
   const activeTodosCount = todos.filter((t) => !t.completed).length;
 
-  useWebMCP({
-    name: "get_todos",
-    description: "Retrieve all current todo tasks and their UI representation",
-    inputSchema: {},
-    handler: async () => {
-      const todosHtml =
-        todos.length === 0
-          ? `<div style="text-align:center; padding: 2rem; color:#6b7280;">You have no tasks! Enjoy your day.</div>`
-          : `<ul style="list-style-type:none; padding:0; display:flex; flex-direction:column; gap:0.75rem;">` +
-            todos
-              .map(
-                (todo) => `
-            <li style="display:flex; align-items:center; justify-content:space-between; padding:1rem; border-radius:0.75rem; border:1px solid #f3f4f6; background-color:#ffffff; box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.05); ${todo.completed ? "opacity:0.7; background-color:#f9fafb;" : ""}">
-              <div style="display:flex; align-items:center; gap:1rem;">
-                <div style="width:1.75rem; height:1.75rem; border-radius:9999px; ${todo.completed ? "background-color:#e0e7ff; color:#6366f1;" : "border:2px solid #d1d5db;"} display:flex; align-items:center; justify-content:center;">
-                  ${todo.completed ? "✓" : ""}
-                </div>
-                <span style="font-size:1.125rem; ${todo.completed ? "color:#9ca3af; text-decoration:line-through;" : "color:#374151; font-weight:500;"}">
-                  ${todo.text}
-                </span>
-              </div>
-            </li>
-          `,
-              )
-              .join("") +
-            `</ul>`;
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.navigator.modelContext) {
+      const toolConfigs = [
+        {
+          name: "get_todos",
+          description:
+            "Retrieve all current todo tasks and their UI representation",
+          inputSchema: { type: "object", properties: {} },
+          execute: async () => {
+            const todosHtml =
+              todos.length === 0
+                ? `<div style="text-align:center; padding: 2rem; color:#6b7280;">You have no tasks! Enjoy your day.</div>`
+                : `<ul style="list-style-type:none; padding:0; display:flex; flex-direction:column; gap:0.75rem;">` +
+                  todos
+                    .map(
+                      (todo) => `
+                  <li style="display:flex; align-items:center; justify-content:space-between; padding:1rem; border-radius:0.75rem; border:1px solid #f3f4f6; background-color:#ffffff; box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.05); ${todo.completed ? "opacity:0.7; background-color:#f9fafb;" : ""}">
+                    <div style="display:flex; align-items:center; gap:1rem;">
+                      <div style="width:1.75rem; height:1.75rem; border-radius:9999px; ${todo.completed ? "background-color:#e0e7ff; color:#6366f1;" : "border:2px solid #d1d5db;"} display:flex; align-items:center; justify-content:center;">
+                        ${todo.completed ? "✓" : ""}
+                      </div>
+                      <span style="font-size:1.125rem; ${todo.completed ? "color:#9ca3af; text-decoration:line-through;" : "color:#374151; font-weight:500;"}">
+                        ${todo.text}
+                      </span>
+                    </div>
+                  </li>
+                `,
+                    )
+                    .join("") +
+                  `</ul>`;
 
-      return {
-        todos,
-        ui: {
-          rawHtml: todosHtml,
+            return {
+              todos,
+              ui: {
+                rawHtml: todosHtml,
+              },
+            };
+          },
         },
-      };
-    },
-  });
+        {
+          name: "add_todo",
+          description: "Add a new todo task to the list",
+          inputSchema: {
+            type: "object",
+            properties: {
+              text: { type: "string" },
+            },
+            required: ["text"],
+          },
+          execute: async ({ text }) => {
+            const newTodo = {
+              id: Date.now(),
+              text: text.trim(),
+              completed: false,
+            };
+            setTodos((prev) => [...prev, newTodo]);
+            return { success: true, todo: newTodo };
+          },
+        },
+        {
+          name: "toggle_todo",
+          description: "Toggle the completion status of a todo task by its ID",
+          inputSchema: {
+            type: "object",
+            properties: {
+              id: { type: "number" },
+            },
+            required: ["id"],
+          },
+          execute: async ({ id }) => {
+            let newStatus = false;
+            setTodos((prev) =>
+              prev.map((todo) => {
+                if (todo.id === id) {
+                  newStatus = !todo.completed;
+                  return { ...todo, completed: newStatus };
+                }
+                return todo;
+              }),
+            );
+            return { success: true, newStatus };
+          },
+        },
+        {
+          name: "delete_todo",
+          description: "Delete a todo task by its ID",
+          inputSchema: {
+            type: "object",
+            properties: {
+              id: { type: "number" },
+            },
+            required: ["id"],
+          },
+          execute: async ({ id }) => {
+            setTodos((prev) => prev.filter((todo) => todo.id !== id));
+            return { success: true };
+          },
+        },
+      ];
 
-  useWebMCP({
-    name: "add_todo",
-    description: "Add a new todo task to the list",
-    inputSchema: {
-      text: z.string().min(1, "Task text cannot be empty"),
-    },
-    handler: async ({ text }) => {
-      const newTodo = { id: Date.now(), text: text.trim(), completed: false };
-      setTodos((prev) => [...prev, newTodo]);
-      return { success: true, todo: newTodo };
-    },
-  });
-
-  useWebMCP({
-    name: "toggle_todo",
-    description: "Toggle the completion status of a todo task by its ID",
-    inputSchema: {
-      id: z.number(),
-    },
-    handler: async ({ id }) => {
-      let found = false;
-      let newStatus = false;
-      setTodos((prev) =>
-        prev.map((todo) => {
-          if (todo.id === id) {
-            found = true;
-            newStatus = !todo.completed;
-            return { ...todo, completed: newStatus };
-          }
-          return todo;
-        }),
-      );
-      if (!found) {
-        throw new Error(`Todo with ID ${id} not found`);
-      }
-      return { success: true, newStatus };
-    },
-  });
-
-  useWebMCP({
-    name: "delete_todo",
-    description: "Delete a todo task by its ID",
-    inputSchema: {
-      id: z.number(),
-    },
-    handler: async ({ id }) => {
-      let found = false;
-      setTodos((prev) => {
-        const next = prev.filter((todo) => todo.id !== id);
-        if (next.length < prev.length) found = true;
-        return next;
+      window.navigator.modelContext.provideContext({
+        tools: toolConfigs,
       });
-      if (!found) {
-        throw new Error(`Todo with ID ${id} not found`);
-      }
-      return { success: true };
-    },
-  });
+      return () => {
+        window.navigator.modelContext.clearContext();
+      };
+    }
+  }, [todos]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center font-sans transition-colors duration-200">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center font-sans transition-colors duration-200">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300">
         <div className="p-6 sm:p-8">
           <div className="flex justify-between items-center mb-6">
@@ -294,12 +306,20 @@ export default function TodoList() {
         </div>
 
         {todos.length > 0 && (
-          <div className="bg-gray-50 dark:bg-gray-800/80 px-6 py-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
-            <span>{todos.length} total items</span>
+          <div className="bg-gray-50 dark:bg-gray-800/80 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-4">
+              <span>{todos.length} total items</span>
+              <button
+                onClick={onNavigateToInsurance}
+                className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                Buy Insurance ➔
+              </button>
+            </div>
             {todos.some((t) => t.completed) && (
               <button
                 onClick={() => setTodos(todos.filter((t) => !t.completed))}
-                className="hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                className="hover:text-red-500 dark:hover:text-red-400 font-medium transition-colors"
               >
                 Clear completed
               </button>

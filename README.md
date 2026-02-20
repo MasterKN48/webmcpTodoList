@@ -1,70 +1,65 @@
-# WebMCP Todo List Learning Project
+# WebMCP Explorer: Todo & Insurance Dashboard
 
-This is a learning project designed to demonstrate the implementation of **WebMCP** in a modern React application. It showcases how to expose application state and functionality as AI-consumable tools directly from the web browser.
+A modern React application demonstrating dual implementations of the **Web Model Context Protocol (WebMCP)**: Imperative and Declarative. This project serves as a technical showcase for the "Agentic Web," allowing AI agents to natively discover and interact with browser-based applications.
 
 ## 🚀 Overview
 
-The project is a sleek, responsive Todo List application built with React and Vite. While it functions as a standard task manager, its primary purpose is to illustrate the integration of the `@mcp-b/react-webmcp` library.
+The **WebMCP Explorer** provides two distinct architectural examples:
+
+- **Task Dashboard (Imperative)**: Real-time tool registration using `window.navigator.modelContext`.
+- **Insurance Engine (Declarative)**: Zero-JS tool discovery using standard HTML form annotations.
 
 ## ✨ Key Features
 
-- **Modern UI**: Built with a clean, Material-inspired design using Tailwind CSS.
-- **Persistence**: Automatically saves your tasks to `localStorage`.
-- **Theme Support**: Responsive dark/light mode support.
-- **WebMCP Integration**: Exposes core functionality through the Model Context Protocol (MCP).
+- **Dual Approach Integration**: Compare imperative JS registration with declarative HTML attributes.
+- **Granular Tool Metadata**: Uses `toolparamtitle` and `toolparamdescription` for high-precision AI interaction.
+- **Visual AI Interaction**: The `get_todos` tool returns `rawHtml`, allowing AI models to visually render the Todo List UI.
+- **Premium UI**: Crafted with React 19, Tailwind CSS v4, and Lucide Icons.
+- **Zero Dependencies**: Pure native API integration (no external WebMCP libraries required).
 
-## � Powered by WebMCP
+## 🛠 WebMCP Availability & Setup
 
-This project leverages the latest standards in the **Agentic Web**:
-
-### 🌐 Google WebMCP
-
-**WebMCP** is a Google-led initiative (currently in early preview) that aims to provide a standard way for websites to expose structured tools to AI agents. It ensures that agents can perform actions on your site with increased speed, reliability, and precision.
-
-- **Learn more**: [WebMCP on Chrome for Developers](https://developer.chrome.com/blog/webmcp-epp)
-
-### 📦 MCP-B (Model Context Protocol for Browsers)
-
-**MCP-B** is a implementation layer (following W3C standards) that makes websites AI-accessible. It enables AI agents to interact with your website through structured tools via the `navigator.modelContext` API.
-
-- **Library used**: `@mcp-b/react-webmcp`
-- **Official Docs**: [MCP-B Documentation](https://docs.mcp-b.ai/introduction)
-
-## �🛠 WebMCP Integration
-
-This application exposes several MCP tools that allow an AI agent to interact with your todo list:
-
-- `get_todos`: Retrieves all current tasks and provides a pre-rendered HTML UI representation.
-- `add_todo`: Allows the agent to add a new task to your list.
-- `toggle_todo`: Switches the completion status of a specific task.
-- `delete_todo`: Removes a task from the list.
-
-## 💻 Getting Started
+> [!IMPORTANT]
+> WebMCP is currently available for testing behind an experimental flag in **Chrome 146** or higher.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (Latest LTS recommended)
-- [Bun](https://bun.sh/) (Optional, but recommended for faster dependency management)
+- **Browser**: Chrome Version 146.0.7672.0 or higher.
+- **Flag**: The "WebMCP for testing" flag must be enabled.
+
+### Setup Steps
+
+1. Navigate to: `chrome://flags/#enable-webmcp-testing`
+2. Set the flag to **Enabled**.
+3. **Relaunch** Chrome.
+
+### Model Context Tool Inspector
+
+To verify implementation, install the [Model Context Tool Inspector Extension](https://chromewebstore.google.com/detail/model-context-tool-inspec/mkblgnmcbofijhcealofolpkmhncidof). It allows you to inspect registered functions and execute them manually.
+
+## 💻 Getting Started
 
 ### Installation
+
+This project uses **Bun** for maximum performance.
 
 1. Install dependencies:
 
    ```bash
-   npm install
+   bun install
    ```
 
 2. Start the development server:
 
    ```bash
-   npm run dev
+   bun run dev
    ```
 
-3. Open your browser to the URL provided by Vite (usually `http://localhost:5173`).
+3. Open your browser to `http://localhost:5174/`.
 
-## 📚 Learning More
+## 📚 Technical Reference
 
-To understand how the MCP tools are implemented, check out the logic in:
-
-- `src/components/TodoList.jsx`: Contains the `useWebMCP` hook definitions.
-- `package.json`: Shows the `@mcp-b/` dependencies used.
+- **Imperative Registry**: Located in `src/components/TodoList.jsx`. Uses `window.navigator.modelContext.provideContext`.
+- **Declarative Form**: Located in `src/components/InsuranceForm.jsx`. Uses `toolname`, `tooldescription`, and `toolparam*` attributes.
+- **Navigation Logic**: Managed in `App.jsx` to toggle between implementation examples.
+- **WEBMCP GUIDE**: [Google WEBMCP GUIDE](https://docs.google.com/document/d/1rtU1fRPS0bMqd9abMG_hc6K9OAI6soUy3Kh00toAgyk/edit?pli=1&tab=t.0)
