@@ -1,16 +1,53 @@
-# React + Vite
+# WebMCP Todo List Learning Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a learning project designed to demonstrate the implementation of **WebMCP** in a modern React application. It showcases how to expose application state and functionality as AI-consumable tools directly from the web browser.
 
-Currently, two official plugins are available:
+## 🚀 Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The project is a sleek, responsive Todo List application built with React and Vite. While it functions as a standard task manager, its primary purpose is to illustrate the integration of the `@mcp-b/react-webmcp` library.
 
-## React Compiler
+## ✨ Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Modern UI**: Built with a clean, Material-inspired design using Tailwind CSS.
+- **Persistence**: Automatically saves your tasks to `localStorage`.
+- **Theme Support**: Responsive dark/light mode support.
+- **WebMCP Integration**: Exposes core functionality through the Model Context Protocol (MCP).
 
-## Expanding the ESLint configuration
+## 🛠 WebMCP Integration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This application exposes several MCP tools that allow an AI agent to interact with your todo list:
+
+- `get_todos`: Retrieves all current tasks and provides a pre-rendered HTML UI representation.
+- `add_todo`: Allows the agent to add a new task to your list.
+- `toggle_todo`: Switches the completion status of a specific task.
+- `delete_todo`: Removes a task from the list.
+
+## 💻 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (Latest LTS recommended)
+- [Bun](https://bun.sh/) (Optional, but recommended for faster dependency management)
+
+### Installation
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser to the URL provided by Vite (usually `http://localhost:5173`).
+
+## 📚 Learning More
+
+To understand how the MCP tools are implemented, check out the logic in:
+
+- `src/components/TodoList.jsx`: Contains the `useWebMCP` hook definitions.
+- `package.json`: Shows the `@mcp-b/` dependencies used.
