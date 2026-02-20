@@ -1,5 +1,8 @@
 # WebMCP Todo List Learning Project
 
+> [!NOTE]
+> The `native_method` branch is an implementation of the native browser-based WebMCP API which was released on 9th Feb 2026 on Chrome Beta 146. That version is currently deployed—feel free to check it out!
+
 This is a learning project designed to demonstrate the implementation of **WebMCP** in a modern React application. It showcases how to expose application state and functionality as AI-consumable tools directly from the web browser.
 
 ## 🚀 Overview
