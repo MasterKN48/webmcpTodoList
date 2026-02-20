@@ -13,7 +13,24 @@ The project is a sleek, responsive Todo List application built with React and Vi
 - **Theme Support**: Responsive dark/light mode support.
 - **WebMCP Integration**: Exposes core functionality through the Model Context Protocol (MCP).
 
-## 🛠 WebMCP Integration
+## � Powered by WebMCP
+
+This project leverages the latest standards in the **Agentic Web**:
+
+### 🌐 Google WebMCP
+
+**WebMCP** is a Google-led initiative (currently in early preview) that aims to provide a standard way for websites to expose structured tools to AI agents. It ensures that agents can perform actions on your site with increased speed, reliability, and precision.
+
+- **Learn more**: [WebMCP on Chrome for Developers](https://developer.chrome.com/blog/webmcp-epp)
+
+### 📦 MCP-B (Model Context Protocol for Browsers)
+
+**MCP-B** is a implementation layer (following W3C standards) that makes websites AI-accessible. It enables AI agents to interact with your website through structured tools via the `navigator.modelContext` API.
+
+- **Library used**: `@mcp-b/react-webmcp`
+- **Official Docs**: [MCP-B Documentation](https://docs.mcp-b.ai/introduction)
+
+## �🛠 WebMCP Integration
 
 This application exposes several MCP tools that allow an AI agent to interact with your todo list:
 
