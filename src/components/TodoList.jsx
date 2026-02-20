@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, CheckCircle, Circle, Edit2, X } from "lucide-react";
+import { useWebMCP } from "@mcp-b/react-webmcp";
+import { z } from "zod";
 
 export default function TodoList() {
   const [todos, setTodos] = useState(() => {
@@ -58,6 +60,101 @@ export default function TodoList() {
   };
 
   const activeTodosCount = todos.filter((t) => !t.completed).length;
+
+  useWebMCP({
+    name: "get_todos",
+    description: "Retrieve all current todo tasks and their UI representation",
+    inputSchema: {},
+    handler: async () => {
+      const todosHtml =
+        todos.length === 0
+          ? `<div style="text-align:center; padding: 2rem; color:#6b7280;">You have no tasks! Enjoy your day.</div>`
+          : `<ul style="list-style-type:none; padding:0; display:flex; flex-direction:column; gap:0.75rem;">` +
+            todos
+              .map(
+                (todo) => `
+            <li style="display:flex; align-items:center; justify-content:space-between; padding:1rem; border-radius:0.75rem; border:1px solid #f3f4f6; background-color:#ffffff; box-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.05); ${todo.completed ? "opacity:0.7; background-color:#f9fafb;" : ""}">
+              <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="width:1.75rem; height:1.75rem; border-radius:9999px; ${todo.completed ? "background-color:#e0e7ff; color:#6366f1;" : "border:2px solid #d1d5db;"} display:flex; align-items:center; justify-content:center;">
+                  ${todo.completed ? "✓" : ""}
+                </div>
+                <span style="font-size:1.125rem; ${todo.completed ? "color:#9ca3af; text-decoration:line-through;" : "color:#374151; font-weight:500;"}">
+                  ${todo.text}
+                </span>
+              </div>
+            </li>
+          `,
+              )
+              .join("") +
+            `</ul>`;
+
+      return {
+        todos,
+        ui: {
+          rawHtml: todosHtml,
+        },
+      };
+    },
+  });
+
+  useWebMCP({
+    name: "add_todo",
+    description: "Add a new todo task to the list",
+    inputSchema: {
+      text: z.string().min(1, "Task text cannot be empty"),
+    },
+    handler: async ({ text }) => {
+      const newTodo = { id: Date.now(), text: text.trim(), completed: false };
+      setTodos((prev) => [...prev, newTodo]);
+      return { success: true, todo: newTodo };
+    },
+  });
+
+  useWebMCP({
+    name: "toggle_todo",
+    description: "Toggle the completion status of a todo task by its ID",
+    inputSchema: {
+      id: z.number(),
+    },
+    handler: async ({ id }) => {
+      let found = false;
+      let newStatus = false;
+      setTodos((prev) =>
+        prev.map((todo) => {
+          if (todo.id === id) {
+            found = true;
+            newStatus = !todo.completed;
+            return { ...todo, completed: newStatus };
+          }
+          return todo;
+        }),
+      );
+      if (!found) {
+        throw new Error(`Todo with ID ${id} not found`);
+      }
+      return { success: true, newStatus };
+    },
+  });
+
+  useWebMCP({
+    name: "delete_todo",
+    description: "Delete a todo task by its ID",
+    inputSchema: {
+      id: z.number(),
+    },
+    handler: async ({ id }) => {
+      let found = false;
+      setTodos((prev) => {
+        const next = prev.filter((todo) => todo.id !== id);
+        if (next.length < prev.length) found = true;
+        return next;
+      });
+      if (!found) {
+        throw new Error(`Todo with ID ${id} not found`);
+      }
+      return { success: true };
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center font-sans transition-colors duration-200">
